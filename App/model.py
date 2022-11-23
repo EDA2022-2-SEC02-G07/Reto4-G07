@@ -38,12 +38,37 @@ los mismos.
 """
 
 # Construccion de modelos
-
+def newCatalog():
+    catalog = {}
+    return catalog
 # Funciones para agregar informacion al catalogo
 
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 1
+    pass
+
+def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
+    pass
+
+def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
+    pass
+
+def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
+    pass
+
+def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
+    pass
+
+def menorCaminoEstacionVencindario(catalogo, idOrigen, idVecindario): #Funcion principal Req 6
+    pass
+
+def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
+    pass
+
+def graficarResultados(catalogo): #Funcion principal Req 8
+    pass
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

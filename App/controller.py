@@ -30,9 +30,46 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
+def newController():
+    """
+    Crea una instancia del modelo
+    """
+    control = {
+        'model': model.newCatalog()
+    }
+    return control
+def loadData(control,size):
+    """
+    Carga los datos de los archivos y cargar los datos en la
+    estructura de datos
+    """
+    pass
 
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 1
+    return model.caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino)
+
+def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
+    return model.menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino)
+
+def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
+    return model.reconocerComponentesConectadosenlaRed(catalogo)
+
+def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
+    return model.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino)
+
+def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
+    return model.localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas)
+
+def menorCaminoEstacionVencindario(catalogo, idOrigen, idVecindario): #Funcion principal Req 6
+    return model.menorCaminoEstacionVencindario(catalogo, idOrigen, idVecindario)
+
+def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
+    return model.caminoCircular(catalogo, idOrigen)
+
+def graficarResultados(catalogo): #Funcion principal Req 8
+    pass
