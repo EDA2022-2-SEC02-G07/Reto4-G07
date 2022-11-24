@@ -48,7 +48,20 @@ def loadData(control,size):
     load_edges(catalog,size)
 
 # Funciones para la carga de datos
-
+def load_edges(catalog,size):
+    file = 'Barcelona/bus_edges_bcn-utf8'+size+'.csv'
+    contentfile = cf.data_dir + file
+    input_file = csv.DictReader(open(contentfile, encoding='utf-8'))
+    for content in input_file:
+        model.add_contentEdges(catalog, content)
+    return catalog
+def load_stops(catalog,size):
+    file = 'Barcelona/bus_stops_bcn-utf8'+size+'.csv'
+    contentfile = cf.data_dir + file
+    input_file = csv.DictReader(open(contentfile, encoding='utf-8'))
+    for content in input_file:
+        model.add_contentStops(catalog, content)
+    return catalog
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
