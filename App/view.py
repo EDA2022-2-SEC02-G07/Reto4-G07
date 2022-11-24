@@ -48,7 +48,7 @@ def printMenu():
     print("0- Salir")
 
 catalog = None
-size = "-large"
+size = "-small"
 
 def printreq1(catalog, idOrigen, idDestino):
     pass

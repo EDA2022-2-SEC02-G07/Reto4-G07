@@ -49,7 +49,7 @@ def newCatalog():
 # Funciones para agregar informacion al catalogo
 
 def add_contentStops(catalog, content):
-    name = content['Code']+content['Bus_Stop'].replace('BUS - ', '')
+    name = content['Code']+"-"+content['Bus_Stop'].replace('BUS - ', '')
     if content['Transbordo']=="S":
         name_T = "T-"+content["Code"]
         if mp.contains(catalog["Transbordo"],name_T) == False:
@@ -61,8 +61,8 @@ def add_contentStops(catalog, content):
     gr.insertVertex(catalog['Graph'], name)
 
 def add_contentEdges(catalog, content):
-    vertexa = content['Code']+content['Bus_Stop'].replace('BUS-','')
-    vertexb = content['Code_Destiny']+content['Bus_Stop'].replace('BUS-','')
+    vertexa = content['Code']+"-"+content['Bus_Stop'].replace('BUS - ','')
+    vertexb = content['Code_Destiny']+"-"+content['Bus_Stop'].replace("BUS - ",'')
     if mp.contains(catalog["VertexMap"],vertexa) == True and mp.contains(catalog["VertexMap"],vertexb) == True :
         latlog_first = (float(me.getValue(mp.get(catalog['NameMap'], vertexa))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexa))['Longitude']))
         latlog_last = (float(me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude']))
