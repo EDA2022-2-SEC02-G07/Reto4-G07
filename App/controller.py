@@ -44,6 +44,7 @@ def loadData(control,size):
     estructura de datos
     """
     catalog = control['model']
+    load_stops(catalog,size)
     load_edges(catalog,size)
 
 # Funciones para la carga de datos
