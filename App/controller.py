@@ -43,7 +43,9 @@ def loadData(control,size):
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
-    pass
+    catalog = control['model']
+    load_stops(catalog,size)
+    load_edges(catalog,size)
 
 # Funciones para la carga de datos
 
