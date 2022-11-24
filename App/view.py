@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import stack as st
 assert cf
 
 
@@ -49,9 +50,11 @@ def printMenu():
 
 catalog = None
 size = "-small"
+search_method = "bfs"
 
-def printreq1(catalog, idOrigen, idDestino):
-    pass
+def printreq1(catalog, idOrigen, idDestino,search_method):
+    stack = controller.caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method)
+    print("Numero de estaciónes de camino:",st.size(stack)+".") 
 
 def printreq2(catalog, idOrigen, idDestino):
     pass
@@ -92,9 +95,9 @@ while True:
             load(catalog)
 
     elif int(inputs[0]) == 2:
-        idOrigen = input(": ")
-        idDestino = input(": ")
-        printreq1(catalog, idOrigen, idDestino)
+        idOrigen = input("Ingrese idOrigen: ")
+        idDestino = input("Ingrese idDestino: ")
+        printreq1(catalog, idOrigen, idDestino,search_method)
 
     elif int(inputs[0]) == 3:
         printreq2(catalog)

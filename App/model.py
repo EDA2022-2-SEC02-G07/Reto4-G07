@@ -31,6 +31,7 @@ from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Graphs import bfs as bf
 assert cf
 
 """
@@ -61,8 +62,8 @@ def add_contentStops(catalog, content):
     gr.insertVertex(catalog['Graph'], name)
 
 def add_contentEdges(catalog, content):
-    vertexa = content['Code']+"-"+content['Bus_Stop'].replace('BUS - ','')
-    vertexb = content['Code_Destiny']+"-"+content['Bus_Stop'].replace("BUS - ",'')
+    vertexa = content['Code']+"-"+content['Bus_Stop'].replace('BUS-','')
+    vertexb = content['Code_Destiny']+"-"+content['Bus_Stop'].replace("BUS-",'')
     if mp.contains(catalog["VertexMap"],vertexa) == True and mp.contains(catalog["VertexMap"],vertexb) == True :
         latlog_first = (float(me.getValue(mp.get(catalog['NameMap'], vertexa))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexa))['Longitude']))
         latlog_last = (float(me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude']))
@@ -82,9 +83,11 @@ def add_Transbordos(catalog):
 
 
 # Funciones de consulta
-def caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 1
-    pass
-
+def caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method): #Funcion principal Req 1
+    if search_method == "bfs":
+        search = bf.BreadhtFisrtSearch(catalog["Graph"],idOrigen)
+        path = bf.pathTo(search,idDestino)
+    return path
 def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
     pass
 

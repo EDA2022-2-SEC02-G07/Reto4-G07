@@ -65,8 +65,8 @@ def load_stops(catalog,size):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
-def caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 1
-    return model.caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino)
+def caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino,search_method): #Funcion principal Req 1
+    return model.caminoPosibleEntreDosEstaciones(catalogo["model"], idOrigen, idDestino,search_method)
 
 def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
     return model.menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino)
