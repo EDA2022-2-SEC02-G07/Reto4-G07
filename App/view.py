@@ -87,7 +87,6 @@ while True:
     if int(inputs[0]) == 1:
          if catalog == None:
             catalog = controller.newController()
-            controller.loadData(catalog,size)
         #controller.loadData(catalog,size)
         #print("Cargando información de los archivos ....")
         #load(catalog)

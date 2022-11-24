@@ -29,7 +29,6 @@ import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.ADT import graph as gp
 from DISClib.Algorithms.Sorting import shellsort as sa
 assert cf
 
@@ -40,11 +39,9 @@ los mismos.
 
 # Construccion de modelos
 def newCatalog():
-    catalog = {"Graph": gp.newGraph(directed=True)}
+    catalog = {}
     return catalog
 # Funciones para agregar informacion al catalogo
-def add_contentEdges(catalog, content):
-    graph = catalog["Graph"]
 
 # Funciones para creacion de datos
 
