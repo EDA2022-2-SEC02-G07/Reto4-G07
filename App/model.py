@@ -43,7 +43,8 @@ def newCatalog():
     catalog = {'Graph':gr.newGraph(directed=True),
                 "NameMap":mp.newMap(),
                 "Transbordo":mp.newMap(),
-                'RoutesMap':mp.newMap()}
+                'RoutesMap':mp.newMap(),
+                "VertexMap":mp.newMap()}
     return catalog
 # Funciones para agregar informacion al catalogo
 
@@ -52,19 +53,22 @@ def add_contentStops(catalog, content):
     if content['Transbordo']=="S":
         name_T = "T-"+content["Code"]
         if mp.contains(catalog["Transbordo"],name_T) == False:
-            mp.put(catalog["Transbordo"],name_T,lt.newList("ARRAY-LIST"))
+            mp.put(catalog["Transbordo"],name_T,lt.newList(datastructure="ARRAY_LIST"))
         lt.addLast(me.getValue(mp.get(catalog["Transbordo"],name_T)),name)
-    mp.put(content["NameMap"],name,content)
+    mp.put(catalog["NameMap"],name,content)
+    if mp.contains(catalog["VertexMap"],name) == False:
+        mp.put(catalog["VertexMap"],name,True)
     gr.insertVertex(catalog['Graph'], name)
 
 def add_contentEdges(catalog, content):
     vertexa = content['Code']+content['Bus_Stop'].replace('BUS-','')
     vertexb = content['Code_Destiny']+content['Bus_Stop'].replace('BUS-','')
-    latlog_first = (me.getValue(mp.get(catalog['NameMap'], vertexa))['Latitude'], me.getValue(mp.get(catalog['NameMap'], vertexa))['Longitude'])
-    latlog_last = (me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude'], me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude'])
-    weight = haversine(latlog_first, latlog_last)
-    gr.addEdge(catalog['Graph'], vertexa, vertexb, weight)
-
+    if mp.contains(catalog["VertexMap"],vertexa) == True and mp.contains(catalog["VertexMap"],vertexb) == True :
+        latlog_first = (float(me.getValue(mp.get(catalog['NameMap'], vertexa))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexa))['Longitude']))
+        latlog_last = (float(me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude']))
+        weight = haversine(latlog_first, latlog_last)
+        gr.addEdge(catalog['Graph'], vertexa, vertexb, weight)
+def add_Transbordos(catalog):
     Transbordo_keys = mp.keySet(catalog["Transbordo"])
     for i in lt.iterator(Transbordo_keys):
         list_ = me.getValue(mp.get(catalog["Transbordo"],i))

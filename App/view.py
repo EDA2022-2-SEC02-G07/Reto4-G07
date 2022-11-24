@@ -48,7 +48,7 @@ def printMenu():
     print("0- Salir")
 
 catalog = None
-size = "-small"
+size = "-large"
 
 def printreq1(catalog, idOrigen, idDestino):
     pass
@@ -87,9 +87,9 @@ while True:
     if int(inputs[0]) == 1:
          if catalog == None:
             catalog = controller.newController()
-        #controller.loadData(catalog,size)
-        #print("Cargando información de los archivos ....")
-        #load(catalog)
+            controller.loadData(catalog,size)
+            print("Cargando información de los archivos ....")
+            load(catalog)
 
     elif int(inputs[0]) == 2:
         idOrigen = input(": ")
