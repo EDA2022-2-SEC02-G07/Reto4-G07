@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-
+from tabulate import tabulate
 import config as cf
 import sys
 import controller
@@ -53,9 +53,19 @@ size = "-small"
 search_method = "bfs"
 
 def printreq1(catalog, idOrigen, idDestino,search_method):
-    stack,weight = controller.caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method)
+    stack,weight,list_ = controller.caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method)
     print("Numero de estaciónes de camino:",str(st.size(stack))+".") 
     print("Distancia total",str(round(weight,2))+"km.")
+    printlist = [["Stop","Distance Next Stop (km)"]]
+    i = 1
+    while i < lt.size(list_)+2:
+        if i != lt.size(list_)+1:
+            printlist.append([lt.getElement(stack,i),lt.getElement(list_,i)])
+        else:
+            printlist.append([lt.getElement(stack,i),'-'])
+        i+=1
+    print(tabulate(printlist,tablefmt="grid"))
+            
 
 def printreq2(catalog, idOrigen, idDestino):
     pass

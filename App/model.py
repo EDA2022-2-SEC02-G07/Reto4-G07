@@ -86,6 +86,7 @@ def add_Transbordos(catalog):
 # Funciones de consulta
 def caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method): #Funcion principal Req 1
     weight = 0
+    list_ = lt.newList("ARRAY_LIST")
     if search_method == "bfs":
         search = bf.BreadhtFisrtSearch(catalog["Graph"],idOrigen)
         path = bf.pathTo(search,idDestino)
@@ -93,9 +94,11 @@ def caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method):
     i = 1
     while i < lt.size(path):
         if i != lt.size(path):
-            weight += gr.getEdge(catalog["Graph"],lt.getElement(path,i),lt.getElement(path,i+1))["weight"]
+            distance = gr.getEdge(catalog["Graph"],lt.getElement(path,i),lt.getElement(path,i+1))["weight"]
+            weight += distance
+            lt.addLast(list_,round(distance,2))
         i+=1
-    return path,weight
+    return path,weight,list_
 def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
     pass
 
