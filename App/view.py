@@ -53,8 +53,9 @@ size = "-small"
 search_method = "bfs"
 
 def printreq1(catalog, idOrigen, idDestino,search_method):
-    stack = controller.caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method)
-    print("Numero de estaciónes de camino:",st.size(stack)+".") 
+    stack,weight = controller.caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method)
+    print("Numero de estaciónes de camino:",str(st.size(stack))+".") 
+    print("Distancia total",str(round(weight,2))+"km.")
 
 def printreq2(catalog, idOrigen, idDestino):
     pass

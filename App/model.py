@@ -32,6 +32,7 @@ from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Graphs import bfs as bf
+from DISClib.ADT import stack as st
 assert cf
 
 """
@@ -84,10 +85,17 @@ def add_Transbordos(catalog):
 
 # Funciones de consulta
 def caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method): #Funcion principal Req 1
+    weight = 0
     if search_method == "bfs":
         search = bf.BreadhtFisrtSearch(catalog["Graph"],idOrigen)
         path = bf.pathTo(search,idDestino)
-    return path
+    path1 = path.copy()
+    i = 1
+    while i < lt.size(path):
+        if i != lt.size(path):
+            weight += gr.getEdge(catalog["Graph"],lt.getElement(path,i),lt.getElement(path,i+1))["weight"]
+        i+=1
+    return path,weight
 def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
     pass
 
