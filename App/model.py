@@ -72,13 +72,13 @@ def add_contentStops(catalog, content):
     content["Code-Ruta"] = name
     lt.addLast(catalog["Graph_List"],content)
     if content['Transbordo']=="S":
-        me.setValue(mp.get(catalog["Load_Map"],"Exclusivas"),me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))+1)
+        me.setValue(mp.get(catalog["Load_Map"],"Transbordo"),me.getValue(mp.get(catalog["Load_Map"],"Transbordo"))+1)
         name_T = "T-"+content["Code"]
         if mp.contains(catalog["Transbordo"],name_T) == False:
             mp.put(catalog["Transbordo"],name_T,lt.newList(datastructure="ARRAY_LIST"))
         lt.addLast(me.getValue(mp.get(catalog["Transbordo"],name_T)),name)
     else:
-        me.setValue(mp.get(catalog["Load_Map"],"Transbordo"),me.getValue(mp.get(catalog["Load_Map"],"Transbordo"))+1)
+        me.setValue(mp.get(catalog["Load_Map"],"Exclusivas"),me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))+1)
     mp.put(catalog["NameMap"],name,content)
     if mp.contains(catalog["VertexMap"],name) == False:
         mp.put(catalog["VertexMap"],name,True)
