@@ -47,6 +47,7 @@ def loadData(control,size):
     load_stops(catalog,size)
     load_edges(catalog,size)
     model.add_Transbordos(catalog)
+    return model.get_LoadValues(catalog)
 # Funciones para la carga de datos
 def load_edges(catalog,size):
     file = 'Barcelona/bus_edges_bcn-utf8'+size+'.csv'

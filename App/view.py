@@ -101,7 +101,27 @@ while True:
     if int(inputs[0]) == 1:
          if catalog == None:
             catalog = controller.newController()
-            controller.loadData(catalog,size)
+            Total_Rutas,Total_Exclusivas,Total_Transbordo,Total_Arcos,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5 = controller.loadData(catalog,size)
+            printlist = [["Code-Ruta","Longitude","Latitude","Adjacents"]]
+            print("Total de rutas:",str(Total_Rutas)+".")
+            print("Total de rutas exclusivas:",str(Total_Exclusivas)+".")
+            print("Total de rutas de transbordo:",str(Total_Transbordo)+".")
+            print("Total de arcos:",str(Total_Arcos)+".")
+            print("Longitud Maxima:",str(Longitud_Maxima)+".")
+            print("Longitud Mínima:",str(Longitud_Minima)+".")
+            print("Latitud Maxima:",str(Latitud_Maxima)+".")
+            print("latitud Mínima:",str(Latitud_Minima)+".")
+            for i in lt.iterator(First_5):
+                xd = []
+                for e in printlist[0]:
+                    xd.append(i[e])
+                printlist.append(xd)
+            for i in lt.iterator(Last_5):
+                xd = []
+                for e in printlist[0]:
+                    xd.append(i[e])
+                printlist.append(xd)
+            print(tabulate(printlist,tablefmt="grid"))
             print("Cargando información de los archivos ....")
             load(catalog)
 
