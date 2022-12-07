@@ -152,7 +152,7 @@ def caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method):
     if search_method == "bfs":
         search = bf.BreadhtFisrtSearch(catalog["Graph"],idOrigen)
         path = bf.pathTo(search,idDestino)
-    path1 = path.copy()
+    path = reverselist(path)
     i = 1
     while i < lt.size(path):
         if i != lt.size(path):
@@ -179,22 +179,31 @@ def menorCaminoEstacionVencindario(catalogo, idOrigen, Vecindario): #Funcion pri
     first = True
     max_name = None
     for i in lt.iterator(vecindario_rutes):
-        if dj.hasPathTo(search,i) == True:
+        ispath = dj.hasPathTo(search,i) 
+        if ispath == True:
             if first == True:
                 max_distance = dj.distTo(search,i)
                 max_name = i
                 first = False
-            elif max_distance < dj.distTo(search,i):
+            elif max_distance > dj.distTo(search,i):
                 max_distance = dj.distTo(search,i)
                 max_name = i
     if max_name == None:
-        return lt.newList()
+        return lt.newList(),lt.newList(),0
     else:
         path = dj.pathTo(search,max_name)
+        path = reverselist(path)
+        path_ = lt.newList("ARRAY_LIST")
         distances_list = lt.newList()
+        i = 1
+        weight = 0
         for i in lt.iterator(path):
-            lt.addLast(distances_list,dj.distTo(search,i))
-        return path,distances_list
+            lt.addLast(path_,i["vertexA"])
+            distance = i["weight"]
+            lt.addLast(distances_list,round(distance,2))
+            weight += distance
+        lt.addLast(path_,i["vertexB"])
+        return path_,distances_list,weight
 def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
     pass
 
@@ -202,5 +211,12 @@ def graficarResultados(catalogo): #Funcion principal Req 8
     pass
 
 # Funciones utilizadas para comparar elementos dentro de una lista
-
+def reverselist(list): #Función para invertir el orden de una lista
+    li = 1
+    lo = lt.size(list)
+    while li <lo:
+        lt.exchange(list,li,lo)
+        li +=1
+        lo -= 1
+    return list
 # Funciones de ordenamiento

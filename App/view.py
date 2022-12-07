@@ -49,7 +49,7 @@ def printMenu():
     print("0- Salir")
 
 catalog = None
-size = "-small"
+size = "-large"
 search_method = "bfs"
 
 def printreq1(catalog, idOrigen, idDestino,search_method):
@@ -80,11 +80,18 @@ def printreq5(catalog, idOrigen, nConexionesPermitidas):
     pass
 
 def printreq6(catalog, idOrigen, idVecindario):
-    path,distances_list = controller.menorCaminoEstacionVencindario(catalog, idOrigen, idVecindario)
-    print_table = [["id","DistNext"]]
-    for i in lt.iterator(distances_list):
-        print_table.append([st.pop(path),i])
-    print(tabulate(print_table,tablefmt="grid"))
+    path,distances_list,weight = controller.menorCaminoEstacionVencindario(catalog, idOrigen, idVecindario)
+    print("Numero de estaciónes de camino:",str(st.size(path))+".") 
+    print("Distancia total",str(round(weight,2))+"km.")
+    printlist = [["Stop","Distance Next Stop (km)"]]
+    i = 1
+    while i < lt.size(distances_list)+2:
+        if i != lt.size(distances_list)+1:
+            printlist.append([lt.getElement(path,i),lt.getElement(distances_list,i)])
+        else:
+            printlist.append([lt.getElement(path,i),'-'])
+        i+=1
+    print(tabulate(printlist,tablefmt="grid"))
 def printreq7(catalog, idOrigen):
     pass
 
