@@ -34,7 +34,10 @@ from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Graphs import bfs as bf
 from DISClib.Algorithms.Graphs import dijsktra as dj
 from DISClib.ADT import stack as st
+from DISClib.Algorithms.Graphs import scc as ko
 assert cf
+
+
 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
@@ -50,7 +53,8 @@ def newCatalog():
                 "ExclusiveMap":mp.newMap(),
                 "Graph_List":lt.newList("ARRAY_LIST"),
                 "Load_Map":mp.newMap(),
-                "Vecindario_Map":mp.newMap()}
+                "Vecindario_Map":mp.newMap(),
+                "scc":None}
     mp.put(catalog["Load_Map"],"Exclusivas",0)
     mp.put(catalog["Load_Map"],"Transbordo",0)
     mp.put(catalog["Load_Map"],"Arcos",0)
@@ -119,6 +123,7 @@ def add_Transbordos(catalog):
             gr.addEdge(catalog["Graph"],e,i,0)
             me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)
             me.setValue(mp.get(catalog["Load_Map"],"RutasCompartidas"),me.getValue(mp.get(catalog["Load_Map"],"RutasCompartidas"))+2)
+        catalog["scc"] = ko.KosarajuSCC(catalog["Graph"])
 def get_LoadValues(catalog):
     Total_Stops_File = mp.size(catalog['NameMap'])
     Total_Edges_File = me.getValue(mp.get(catalog['Load_Map'],'EdgesInFile'))
@@ -165,8 +170,9 @@ def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion princ
     pass
 
 def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
-    pass
-
+    componentes_conectados = ko.connectedComponents(catalogo["scc"])
+    print("componentes_conectados",str(componentes_conectados))
+    print(catalogo["scc"]["idscc"])
 def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
     pass
 

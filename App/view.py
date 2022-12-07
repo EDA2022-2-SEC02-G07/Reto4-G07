@@ -22,6 +22,7 @@
 from tabulate import tabulate
 import config as cf
 import sys
+import threading
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import stack as st
@@ -48,9 +49,6 @@ def printMenu():
     print("9- Graficar resultados para cada uno de los requerimientos")
     print("0- Salir")
 
-catalog = None
-size = "-large"
-search_method = "bfs"
 
 def printreq1(catalog, idOrigen, idDestino,search_method):
     stack,weight,list_ = controller.caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method)
@@ -71,7 +69,7 @@ def printreq2(catalog, idOrigen, idDestino):
     pass
 
 def printreq3(catalog):
-    pass
+    controller.reconocerComponentesConectadosenlaRed(catalog)
 
 def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
     pass
@@ -104,80 +102,85 @@ Menu principal
 
 def load(catalog):
     pass
+def menu():
+    catalog = None
+    size = "-small"
+    search_method = "bfs"
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n')
+        if int(inputs[0]) == 1:
+            if catalog == None:
+                catalog = controller.newController()
+                Total_Stops_File, Total_Edges_File, Total_Estaciones, Total_Rutas_Comparitdas, Total_Rutas_Exclusivas, Total_Rutas, Total_Exclusivas,Total_Transbordo,Total_Arcos,Total_Vertices,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5 = controller.loadData(catalog,size)
+                printlist = [["Code-Ruta","Longitude","Latitude","Adjacents"]]
+                print('Tamaño del archivo CSV Bus-Stops:', Total_Stops_File)
+                print('Tamaño del archivo CSV Routes', Total_Edges_File)
+                print("- - - Estaciones - - -")
+                print("Total de estaciones exclusivas:",str(Total_Exclusivas)+".")
+                print("Total de estaciones de transbordo:",str(Total_Transbordo)+".")
+                print("Total de estaciones:",str(Total_Estaciones)+".\n")
+                print("- - - Rutas - - -")
+                print("Total de rutas exclusivas:",str(Total_Rutas_Exclusivas)+".")
+                print("Total de rutas de transbordo:",str(Total_Rutas_Comparitdas)+".")
+                print("Total de rutas:",str(Total_Rutas)+".")
+                print(5*'-','Especificaciones del Grafo',5*'-')
+                print("Total de vértices:",str(Total_Vertices)+".")
+                print("Total de arcos:",str(Total_Arcos)+".")
+                print('Rango del área rectangular de Barcelona:\nLongitud: [',str(Longitud_Minima),',',str(Longitud_Maxima),']\nLatitud: [',str(Latitud_Minima),',',str(Latitud_Maxima),']')
+                for i in lt.iterator(First_5):
+                    xd = []
+                    for e in printlist[0]:
+                        xd.append(i[e])
+                    printlist.append(xd)
+                for i in lt.iterator(Last_5):
+                    xd = []
+                    for e in printlist[0]:
+                        xd.append(i[e])
+                    printlist.append(xd)
+                print(tabulate(printlist,tablefmt="grid"))
+                print("Cargando información de los archivos ....")
+                load(catalog)
 
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
-         if catalog == None:
-            catalog = controller.newController()
-            Total_Stops_File, Total_Edges_File, Total_Estaciones, Total_Rutas_Comparitdas, Total_Rutas_Exclusivas, Total_Rutas, Total_Exclusivas,Total_Transbordo,Total_Arcos,Total_Vertices,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5 = controller.loadData(catalog,size)
-            printlist = [["Code-Ruta","Longitude","Latitude","Adjacents"]]
-            print('Tamaño del archivo CSV Bus-Stops:', Total_Stops_File)
-            print('Tamaño del archivo CSV Routes', Total_Edges_File)
-            print("- - - Estaciones - - -")
-            print("Total de estaciones exclusivas:",str(Total_Exclusivas)+".")
-            print("Total de estaciones de transbordo:",str(Total_Transbordo)+".")
-            print("Total de estaciones:",str(Total_Estaciones)+".\n")
-            print("- - - Rutas - - -")
-            print("Total de rutas exclusivas:",str(Total_Rutas_Exclusivas)+".")
-            print("Total de rutas de transbordo:",str(Total_Rutas_Comparitdas)+".")
-            print("Total de rutas:",str(Total_Rutas)+".")
-            print(5*'-','Especificaciones del Grafo',5*'-')
-            print("Total de vértices:",str(Total_Vertices)+".")
-            print("Total de arcos:",str(Total_Arcos)+".")
-            print('Rango del área rectangular de Barcelona:\nLongitud: [',str(Longitud_Minima),',',str(Longitud_Maxima),']\nLatitud: [',str(Latitud_Minima),',',str(Latitud_Maxima),']')
-            for i in lt.iterator(First_5):
-                xd = []
-                for e in printlist[0]:
-                    xd.append(i[e])
-                printlist.append(xd)
-            for i in lt.iterator(Last_5):
-                xd = []
-                for e in printlist[0]:
-                    xd.append(i[e])
-                printlist.append(xd)
-            print(tabulate(printlist,tablefmt="grid"))
-            print("Cargando información de los archivos ....")
-            load(catalog)
+        elif int(inputs[0]) == 2:
+            idOrigen = input("Ingrese idOrigen: ")
+            idDestino = input("Ingrese idDestino: ")
+            printreq1(catalog, idOrigen, idDestino,search_method)
 
-    elif int(inputs[0]) == 2:
-        idOrigen = input("Ingrese idOrigen: ")
-        idDestino = input("Ingrese idDestino: ")
-        printreq1(catalog, idOrigen, idDestino,search_method)
+        elif int(inputs[0]) == 3:
+            printreq2(catalog)
 
-    elif int(inputs[0]) == 3:
-        printreq2(catalog)
+        elif int(inputs[0]) == 4:
+            printreq3(catalog)
 
-    elif int(inputs[0]) == 4:
-        lonOrigen = input(": ")
-        latOrigen = input(": ")
-        lonDestino = input(": ")
-        latDestino = input(": ")
-        printreq3(catalog, lonOrigen, latOrigen, lonDestino, latDestino)
+        elif int(inputs[0]) == 5:
+            idOrigen = input(": ")
+            N = input(": ")
+            printreq4(catalog, idOrigen, idDestino)
 
-    elif int(inputs[0]) == 5:
-        idOrigen = input(": ")
-        N = input(": ")
-        printreq4(catalog, idOrigen, idDestino)
+        elif int(inputs[0]) == 6:
+            idOrigen = input(": ")
+            idDestino = input(": ")
+            printreq5(catalog, idOrigen, idDestino)
 
-    elif int(inputs[0]) == 6:
-        idOrigen = input(": ")
-        idDestino = input(": ")
-        printreq5(catalog, idOrigen, idDestino)
+        elif int(inputs[0]) == 7:
+            idOrigen = input("Ingrese la Id de origen: ")
+            idVecindario = input("Ingrese el nombre del vecindario: ")
+            printreq6(catalog, idOrigen, idVecindario)
 
-    elif int(inputs[0]) == 7:
-        idOrigen = input("Ingrese la Id de origen: ")
-        idVecindario = input("Ingrese el nombre del vecindario: ")
-        printreq6(catalog, idOrigen, idVecindario)
+        elif int(inputs[0]) == 8:
+            idOrigen = input(": ")
+            printreq7(catalog, idOrigen, idDestino)
 
-    elif int(inputs[0]) == 8:
-        idOrigen = input(": ")
-        printreq7(catalog, idOrigen, idDestino)
+        elif int(inputs[0]) == 8:
+            printreq8(catalog)
 
-    elif int(inputs[0]) == 8:
-        printreq8(catalog)
+        else:
+            sys.exit(0)
+    sys.exit(0)
 
-    else:
-        sys.exit(0)
-sys.exit(0)
+if __name__ == "__main__":
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=menu)
+    thread.start()
