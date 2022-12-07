@@ -30,7 +30,8 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.ADT import orderedmap as om
+from DISClib.Algorithms.Sorting import mergesort as mer
 from DISClib.Algorithms.Graphs import bfs as bf
 from DISClib.Algorithms.Graphs import dijsktra as dj
 from DISClib.ADT import stack as st
@@ -54,7 +55,8 @@ def newCatalog():
                 "Graph_List":lt.newList("ARRAY_LIST"),
                 "Load_Map":mp.newMap(),
                 "Vecindario_Map":mp.newMap(),
-                "scc":None}
+                "scc":None,
+                "components":om.newMap()}
     mp.put(catalog["Load_Map"],"Exclusivas",0)
     mp.put(catalog["Load_Map"],"Transbordo",0)
     mp.put(catalog["Load_Map"],"Arcos",0)
@@ -123,7 +125,12 @@ def add_Transbordos(catalog):
             gr.addEdge(catalog["Graph"],e,i,0)
             me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)
             me.setValue(mp.get(catalog["Load_Map"],"RutasCompartidas"),me.getValue(mp.get(catalog["Load_Map"],"RutasCompartidas"))+2)
-        catalog["scc"] = ko.KosarajuSCC(catalog["Graph"])
+def components(catalog):
+    catalog["scc"] = ko.KosarajuSCC(catalog["Graph"])
+    for i in lt.iterator(om.keySet(catalog["scc"]["idscc"])):
+        if om.contains(catalog["components"],me.getValue(mp.get(catalog["scc"]["idscc"],i))) == False:
+            om.put(catalog["components"],me.getValue(mp.get(catalog["scc"]["idscc"],i)),lt.newList("ARRAY_LIST"))
+        lt.addLast(me.getValue(om.get(catalog["components"],me.getValue(mp.get(catalog["scc"]["idscc"],i)))),i)
 def get_LoadValues(catalog):
     Total_Stops_File = mp.size(catalog['NameMap'])
     Total_Edges_File = me.getValue(mp.get(catalog['Load_Map'],'EdgesInFile'))
@@ -171,8 +178,12 @@ def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion princ
 
 def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
     componentes_conectados = ko.connectedComponents(catalogo["scc"])
-    print("componentes_conectados",str(componentes_conectados))
-    print(catalogo["scc"]["idscc"])
+    maxkey = om.maxKey(catalogo["components"])
+    minkey = om.minKey(catalogo["components"])
+    list_ = om.values(catalogo["components"],minkey,maxkey)
+    mer.sort(list_,cmpReq3)
+    sublist = lt.subList(list_,1,5)
+    return sublist,componentes_conectados
 def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
     pass
 
@@ -226,3 +237,8 @@ def reverselist(list): #Función para invertir el orden de una lista
         lo -= 1
     return list
 # Funciones de ordenamiento
+def cmpReq3(lis1,list2):
+    if lt.size(lis1) > lt.size(list2):
+        return True
+    else:
+        return False

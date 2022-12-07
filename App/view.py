@@ -69,8 +69,25 @@ def printreq2(catalog, idOrigen, idDestino):
     pass
 
 def printreq3(catalog):
-    controller.reconocerComponentesConectadosenlaRed(catalog)
-
+    sublist,componentes = controller.reconocerComponentesConectadosenlaRed(catalog)
+    print("Hay",str(componentes),"componentes conectados.")
+    printlist = [["rank","3 ultimos y primeros","cantidad"]]
+    rank = 1
+    for i in lt.iterator(sublist):
+        a = [["Id"]]
+        if lt.size(i) >= 6:
+            first = lt.subList(i,1,3)
+            last = lt.subList(i,lt.size(i)-2,3)
+            for c in lt.iterator(first):
+                a.append([c])
+            for c in lt.iterator(last):
+                a.append([c])
+        else:
+            for c in lt.iterator(i):
+                a.append([c])
+        printlist.append([rank,tabulate(a,tablefmt="grid"),lt.size(i)])
+        rank +=1
+    print(tabulate(printlist,tablefmt="grid"))
 def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
     pass
 
@@ -104,7 +121,7 @@ def load(catalog):
     pass
 def menu():
     catalog = None
-    size = "-small"
+    size = "-large"
     search_method = "bfs"
     while True:
         printMenu()
