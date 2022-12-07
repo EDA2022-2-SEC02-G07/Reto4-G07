@@ -76,7 +76,7 @@ def add_contentStops(catalog, content):
         name_T = "T-"+content["Code"]
         if mp.contains(catalog["Transbordo"],name_T) == False:
             mp.put(catalog["Transbordo"],name_T,lt.newList(datastructure="ARRAY_LIST"))
-        lt.addLast(me.getValue(mp.get(catalog["Transbordo"],name_T)),name)
+        lt.addLast(me.getValue(mp.get(catalog["Transbordo"],name_T)),name)  
     else:
         me.setValue(mp.get(catalog["Load_Map"],"Exclusivas"),me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))+1)
     mp.put(catalog["NameMap"],name,content)
@@ -97,13 +97,13 @@ def add_Transbordos(catalog):
     Transbordo_keys = mp.keySet(catalog["Transbordo"])
     for i in lt.iterator(Transbordo_keys):
         list_ = me.getValue(mp.get(catalog["Transbordo"],i))
-        if lt.size(list_) > 1:
-            gr.insertVertex(catalog["Graph"],i)
-            for e in lt.iterator(list_):
-                me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
-                me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
-                gr.addEdge(catalog["Graph"],i,e,0)
-                gr.addEdge(catalog["Graph"],e,i,0)
+        lt.addLast(catalog["Graph_List"],{"Code-Ruta":i,"Longitude":"","Latitude":"","Adjacents":""})
+        gr.insertVertex(catalog["Graph"],i)
+        for e in lt.iterator(list_):
+            me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
+            me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
+            gr.addEdge(catalog["Graph"],i,e,0)
+            gr.addEdge(catalog["Graph"],e,i,0)
 def get_LoadValues(catalog):
     Total_Rutas = lt.size(mp.keySet(catalog["VertexMap"]))
     Total_Exclusivas = me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))
