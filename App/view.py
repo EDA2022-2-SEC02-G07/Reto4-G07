@@ -80,8 +80,11 @@ def printreq5(catalog, idOrigen, nConexionesPermitidas):
     pass
 
 def printreq6(catalog, idOrigen, idVecindario):
-    pass
-
+    path,distances_list = controller.menorCaminoEstacionVencindario(catalog, idOrigen, idVecindario)
+    print_table = [["id","DistNext"]]
+    for i in lt.iterator(distances_list):
+        print_table.append([st.pop(path),i])
+    print(tabulate(print_table,tablefmt="grid"))
 def printreq7(catalog, idOrigen):
     pass
 
@@ -101,21 +104,22 @@ while True:
     if int(inputs[0]) == 1:
          if catalog == None:
             catalog = controller.newController()
-            Total_Rutas,Total_Exclusivas,Total_Transbordo,Total_Arcos,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5 = controller.loadData(catalog,size)
+            Total_Stops_File, Total_Edges_File, Total_Estaciones, Total_Rutas_Comparitdas, Total_Rutas_Exclusivas, Total_Rutas, Total_Exclusivas,Total_Transbordo,Total_Arcos,Total_Vertices,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5 = controller.loadData(catalog,size)
             printlist = [["Code-Ruta","Longitude","Latitude","Adjacents"]]
+            print('Tamaño del archivo CSV Bus-Stops:', Total_Stops_File)
+            print('Tamaño del archivo CSV Routes', Total_Edges_File)
             print("- - - Estaciones - - -")
             print("Total de estaciones exclusivas:",str(Total_Exclusivas)+".")
             print("Total de estaciones de transbordo:",str(Total_Transbordo)+".")
-            print("Total de estaciones:",str(Total_Rutas)+".\n")
+            print("Total de estaciones:",str(Total_Estaciones)+".\n")
             print("- - - Rutas - - -")
-            print("Total de rutas exclusivas:",str(Total_Exclusivas)+".")
-            print("Total de rutas de transbordo:",str(Total_Transbordo)+".")
+            print("Total de rutas exclusivas:",str(Total_Rutas_Exclusivas)+".")
+            print("Total de rutas de transbordo:",str(Total_Rutas_Comparitdas)+".")
             print("Total de rutas:",str(Total_Rutas)+".")
+            print(5*'-','Especificaciones del Grafo',5*'-')
+            print("Total de vértices:",str(Total_Vertices)+".")
             print("Total de arcos:",str(Total_Arcos)+".")
-            print("Longitud Maxima:",str(Longitud_Maxima)+".")
-            print("Longitud Mínima:",str(Longitud_Minima)+".")
-            print("Latitud Maxima:",str(Latitud_Maxima)+".")
-            print("latitud Mínima:",str(Latitud_Minima)+".")
+            print('Rango del área rectangular de Barcelona:\nLongitud: [',str(Longitud_Minima),',',str(Longitud_Maxima),']\nLatitud: [',str(Latitud_Minima),',',str(Latitud_Maxima),']')
             for i in lt.iterator(First_5):
                 xd = []
                 for e in printlist[0]:
@@ -156,9 +160,9 @@ while True:
         printreq5(catalog, idOrigen, idDestino)
 
     elif int(inputs[0]) == 7:
-        idOrigen = input(": ")
-        idVecindario = input(": ")
-        printreq6(catalog, idOrigen, idDestino)
+        idOrigen = input("Ingrese la Id de origen: ")
+        idVecindario = input("Ingrese el nombre del vecindario: ")
+        printreq6(catalog, idOrigen, idVecindario)
 
     elif int(inputs[0]) == 8:
         idOrigen = input(": ")

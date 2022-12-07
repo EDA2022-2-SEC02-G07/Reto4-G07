@@ -32,6 +32,7 @@ from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Graphs import bfs as bf
+from DISClib.Algorithms.Graphs import dijsktra as dj
 from DISClib.ADT import stack as st
 assert cf
 
@@ -45,21 +46,27 @@ def newCatalog():
     catalog = {'Graph':gr.newGraph(directed=True),
                 "NameMap":mp.newMap(),
                 "Transbordo":mp.newMap(),
-                'RoutesMap':mp.newMap(),
                 "VertexMap":mp.newMap(),
+                "ExclusiveMap":mp.newMap(),
                 "Graph_List":lt.newList("ARRAY_LIST"),
-                "Load_Map":mp.newMap()}
+                "Load_Map":mp.newMap(),
+                "Vecindario_Map":mp.newMap()}
     mp.put(catalog["Load_Map"],"Exclusivas",0)
     mp.put(catalog["Load_Map"],"Transbordo",0)
     mp.put(catalog["Load_Map"],"Arcos",0)
+    mp.put(catalog['Load_Map'],"Rutas",0)
     mp.put(catalog["Load_Map"],"Longitud_Minima",10e100)
     mp.put(catalog["Load_Map"],"Longitud_Maxima",0)
     mp.put(catalog["Load_Map"],"Latitud_Minima",10e100)
     mp.put(catalog["Load_Map"],"Latitud_Maxima",0)
+    mp.put(catalog['Load_Map'],"EdgesInFile",0),
+    mp.put(catalog['Load_Map'], 'RutasCompartidas',0),
+    mp.put(catalog['Load_Map'], 'RutasExclusivas', 0)
     return catalog
 # Funciones para agregar informacion al catalogo
 
 def add_contentStops(catalog, content):
+
     if float(content["Longitude"]) < me.getValue(mp.get(catalog["Load_Map"],"Longitud_Minima")):
         me.setValue(mp.get(catalog["Load_Map"],"Longitud_Minima"),float(content["Longitude"]))
     elif float(content["Longitude"]) > me.getValue(mp.get(catalog["Load_Map"],"Longitud_Maxima")):
@@ -68,47 +75,61 @@ def add_contentStops(catalog, content):
         me.setValue(mp.get(catalog["Load_Map"],"Latitud_Minima"),float(content["Latitude"]))
     elif float(content["Latitude"]) > me.getValue(mp.get(catalog["Load_Map"],"Latitud_Maxima")):
         me.setValue(mp.get(catalog["Load_Map"],"Latitud_Maxima"),float(content["Latitude"]))
-    name = content['Code']+"-"+content['Bus_Stop'].replace('BUS - ', '')
+    name = content['Code']+"-"+content['Bus_Stop'].replace('BUS-', '')
     content["Code-Ruta"] = name
     lt.addLast(catalog["Graph_List"],content)
     if content['Transbordo']=="S":
-        me.setValue(mp.get(catalog["Load_Map"],"Transbordo"),me.getValue(mp.get(catalog["Load_Map"],"Transbordo"))+1)
         name_T = "T-"+content["Code"]
         if mp.contains(catalog["Transbordo"],name_T) == False:
-            mp.put(catalog["Transbordo"],name_T,lt.newList(datastructure="ARRAY_LIST"))
-        lt.addLast(me.getValue(mp.get(catalog["Transbordo"],name_T)),name)  
+            me.setValue(mp.get(catalog["Load_Map"],"Transbordo"),me.getValue(mp.get(catalog["Load_Map"],"Transbordo"))+1)
+            mp.put(catalog["Transbordo"],name_T,mp.newMap())
+        mp.put(me.getValue(mp.get(catalog['Transbordo'], name_T)), name, content)  
     else:
-        me.setValue(mp.get(catalog["Load_Map"],"Exclusivas"),me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))+1)
+        if mp.contains(catalog['ExclusiveMap'], content['Code'])==False:
+            me.setValue(mp.get(catalog["Load_Map"],"Exclusivas"),me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))+1)
+            mp.put(catalog['ExclusiveMap'],content['Code'],lt.newList('ARRAY_LIST'))
+        lt.addLast(me.getValue(mp.get(catalog['ExclusiveMap'], content['Code'])), name)
     mp.put(catalog["NameMap"],name,content)
     if mp.contains(catalog["VertexMap"],name) == False:
         mp.put(catalog["VertexMap"],name,True)
     gr.insertVertex(catalog['Graph'], name)
-
+    if mp.contains(catalog["Vecindario_Map"],content["Neighborhood_Name"]) == False:
+        mp.put(catalog["Vecindario_Map"],content["Neighborhood_Name"],lt.newList("ARRAY_LIST"))
+    lt.addLast(me.getValue(mp.get(catalog["Vecindario_Map"],content["Neighborhood_Name"])),name)
 def add_contentEdges(catalog, content):
+    me.setValue(mp.get(catalog['Load_Map'], 'EdgesInFile'), me.getValue(mp.get(catalog['Load_Map'], 'EdgesInFile'))+1)
     vertexa = content['Code']+"-"+content['Bus_Stop'].replace('BUS-','')
     vertexb = content['Code_Destiny']+"-"+content['Bus_Stop'].replace("BUS-",'')
     if mp.contains(catalog["VertexMap"],vertexa) == True and mp.contains(catalog["VertexMap"],vertexb) == True :
         latlog_first = (float(me.getValue(mp.get(catalog['NameMap'], vertexa))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexa))['Longitude']))
         latlog_last = (float(me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude']))
         weight = haversine(latlog_first, latlog_last)
-        me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
         gr.addEdge(catalog['Graph'], vertexa, vertexb, weight)
+        me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
+        me.setValue(mp.get(catalog["Load_Map"],"RutasExclusivas"),me.getValue(mp.get(catalog["Load_Map"],"RutasExclusivas"))+1)
 def add_Transbordos(catalog):
     Transbordo_keys = mp.keySet(catalog["Transbordo"])
     for i in lt.iterator(Transbordo_keys):
-        list_ = me.getValue(mp.get(catalog["Transbordo"],i))
-        lt.addLast(catalog["Graph_List"],{"Code-Ruta":i,"Longitude":"","Latitude":"","Adjacents":""})
+        list_ = mp.keySet(me.getValue(mp.get(catalog['Transbordo'], i)))
+        values_ = mp.valueSet(me.getValue(mp.get(catalog['Transbordo'], i)))
+        lt.addLast(catalog["Graph_List"],{"Code-Ruta":i,"Longitude":lt.getElement(values_, 1)['Longitude'],"Latitude":lt.getElement(values_, 1)['Latitude'],"Adjacents":""})
         gr.insertVertex(catalog["Graph"],i)
         for e in lt.iterator(list_):
-            me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
-            me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
             gr.addEdge(catalog["Graph"],i,e,0)
             gr.addEdge(catalog["Graph"],e,i,0)
+            me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)
+            me.setValue(mp.get(catalog["Load_Map"],"RutasCompartidas"),me.getValue(mp.get(catalog["Load_Map"],"RutasCompartidas"))+2)
 def get_LoadValues(catalog):
-    Total_Rutas = lt.size(mp.keySet(catalog["VertexMap"]))
+    Total_Stops_File = mp.size(catalog['NameMap'])
+    Total_Edges_File = me.getValue(mp.get(catalog['Load_Map'],'EdgesInFile'))
     Total_Exclusivas = me.getValue(mp.get(catalog["Load_Map"],"Exclusivas"))
     Total_Transbordo = me.getValue(mp.get(catalog["Load_Map"],"Transbordo"))
+    Total_Estaciones = Total_Exclusivas + Total_Transbordo
+    Total_Rutas_Compartidas = me.getValue(mp.get(catalog['Load_Map'],'RutasCompartidas'))
+    Total_Rutas_Exclusivas = me.getValue(mp.get(catalog['Load_Map'],'RutasExclusivas'))
+    Total_Rutas = Total_Rutas_Compartidas + Total_Rutas_Exclusivas
     Total_Arcos = me.getValue(mp.get(catalog["Load_Map"],"Arcos"))
+    Total_Vertices = gr.numVertices(catalog['Graph'])
     Longitud_Minima = me.getValue(mp.get(catalog["Load_Map"],"Longitud_Minima"))
     Longitud_Maxima = me.getValue(mp.get(catalog["Load_Map"],"Longitud_Maxima"))
     Latitud_Maxima = me.getValue(mp.get(catalog["Load_Map"],"Latitud_Maxima"))
@@ -119,7 +140,7 @@ def get_LoadValues(catalog):
         i["Adjacents"] = lt.size(gr.adjacents(catalog["Graph"],i["Code-Ruta"]))
     for i in lt.iterator(Last_5):
         i["Adjacents"] = lt.size(gr.adjacents(catalog["Graph"],i["Code-Ruta"]))
-    return Total_Rutas,Total_Exclusivas,Total_Transbordo,Total_Arcos,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5
+    return Total_Stops_File, Total_Edges_File, Total_Estaciones, Total_Rutas_Compartidas, Total_Rutas_Exclusivas, Total_Rutas, Total_Exclusivas,Total_Transbordo,Total_Arcos,Total_Vertices,Longitud_Maxima,Longitud_Minima,Latitud_Maxima,Latitud_Minima,First_5,Last_5
 # Funciones para creacion de datos
 
 
@@ -152,9 +173,28 @@ def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latO
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
     pass
 
-def menorCaminoEstacionVencindario(catalogo, idOrigen, idVecindario): #Funcion principal Req 6
-    pass
-
+def menorCaminoEstacionVencindario(catalogo, idOrigen, Vecindario): #Funcion principal Req 6
+    vecindario_rutes = me.getValue(mp.get(catalogo["Vecindario_Map"],Vecindario))
+    search = dj.Dijkstra(catalogo["Graph"],idOrigen)
+    first = True
+    max_name = None
+    for i in lt.iterator(vecindario_rutes):
+        if dj.hasPathTo(search,i) == True:
+            if first == True:
+                max_distance = dj.distTo(search,i)
+                max_name = i
+                first = False
+            elif max_distance < dj.distTo(search,i):
+                max_distance = dj.distTo(search,i)
+                max_name = i
+    if max_name == None:
+        return lt.newList()
+    else:
+        path = dj.pathTo(search,max_name)
+        distances_list = lt.newList()
+        for i in lt.iterator(path):
+            lt.addLast(distances_list,dj.distTo(search,i))
+        return path,distances_list
 def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
     pass
 

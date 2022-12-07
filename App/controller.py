@@ -70,22 +70,22 @@ def caminoPosibleEntreDosEstaciones(catalogo, idOrigen, idDestino,search_method)
     return model.caminoPosibleEntreDosEstaciones(catalogo["model"], idOrigen, idDestino,search_method)
 
 def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
-    return model.menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino)
+    return model.menorCaminoEntreDosEstaciones(catalogo["model"], idOrigen, idDestino)
 
 def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
-    return model.reconocerComponentesConectadosenlaRed(catalogo)
+    return model.reconocerComponentesConectadosenlaRed(catalogo["model"])
 
 def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
-    return model.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino)
+    return model.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo["model"], lonOrigen, latOrigen, lonDestino, latDestino)
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
-    return model.localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas)
+    return model.localizarEstacionesAlcanzables(catalogo["model"], idOrigen, nConexionesPermitidas)
 
 def menorCaminoEstacionVencindario(catalogo, idOrigen, idVecindario): #Funcion principal Req 6
-    return model.menorCaminoEstacionVencindario(catalogo, idOrigen, idVecindario)
+    return model.menorCaminoEstacionVencindario(catalogo["model"], idOrigen, idVecindario)
 
 def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
-    return model.caminoCircular(catalogo, idOrigen)
+    return model.caminoCircular(catalogo["model"], idOrigen)
 
 def graficarResultados(catalogo): #Funcion principal Req 8
     pass
