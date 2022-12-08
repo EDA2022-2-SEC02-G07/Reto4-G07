@@ -36,6 +36,7 @@ from DISClib.Algorithms.Graphs import bfs as bf
 from DISClib.Algorithms.Graphs import dijsktra as dj
 from DISClib.ADT import stack as st
 from DISClib.Algorithms.Graphs import scc as ko
+from DISClib.Algorithms.Graphs import cycles as cy
 assert cf
 
 
@@ -56,7 +57,9 @@ def newCatalog():
                 "Load_Map":mp.newMap(),
                 "Vecindario_Map":mp.newMap(),
                 "scc":None,
-                "components":om.newMap()}
+                "components":om.newMap(),
+                "Edge_List":lt.newList("ARRAY_LIST"),
+                "Edge_components":om.newMap()}
     mp.put(catalog["Load_Map"],"Exclusivas",0)
     mp.put(catalog["Load_Map"],"Transbordo",0)
     mp.put(catalog["Load_Map"],"Arcos",0)
@@ -111,6 +114,7 @@ def add_contentEdges(catalog, content):
         latlog_last = (float(me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude']))
         weight = haversine(latlog_first, latlog_last)
         gr.addEdge(catalog['Graph'], vertexa, vertexb, weight)
+        lt.addLast(catalog["Edge_List"],{"vertexA":vertexa,"vertexB":vertexb,"weight":weight})
         me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
         me.setValue(mp.get(catalog["Load_Map"],"RutasExclusivas"),me.getValue(mp.get(catalog["Load_Map"],"RutasExclusivas"))+1)
 def add_Transbordos(catalog):
@@ -123,6 +127,8 @@ def add_Transbordos(catalog):
         for e in lt.iterator(list_):
             gr.addEdge(catalog["Graph"],i,e,0)
             gr.addEdge(catalog["Graph"],e,i,0)
+            lt.addLast(catalog["Edge_List"],{"vertexA":i,"vertexB":e,"weight":0})
+            lt.addLast(catalog["Edge_List"],{"vertexA":e,"vertexB":i,"weight":0})
             me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)
             me.setValue(mp.get(catalog["Load_Map"],"RutasCompartidas"),me.getValue(mp.get(catalog["Load_Map"],"RutasCompartidas"))+2)
 def components(catalog):
@@ -131,6 +137,12 @@ def components(catalog):
         if om.contains(catalog["components"],me.getValue(mp.get(catalog["scc"]["idscc"],i))) == False:
             om.put(catalog["components"],me.getValue(mp.get(catalog["scc"]["idscc"],i)),lt.newList("ARRAY_LIST"))
         lt.addLast(me.getValue(om.get(catalog["components"],me.getValue(mp.get(catalog["scc"]["idscc"],i)))),i)
+    for i in lt.iterator(catalog["Edge_List"]):
+        vertex = i["vertexA"]
+        key = me.getValue(mp.get(catalog["scc"]["idscc"],vertex))
+        if om.contains(catalog["Edge_components"],key) == False:
+            om.put(catalog["Edge_components"],key,lt.newList("ARRAY_LIST"))
+        lt.addLast(me.getValue(om.get(catalog["Edge_components"],key)),i)
 def get_LoadValues(catalog):
     Total_Stops_File = mp.size(catalog['NameMap'])
     Total_Edges_File = me.getValue(mp.get(catalog['Load_Map'],'EdgesInFile'))
@@ -222,8 +234,52 @@ def menorCaminoEstacionVencindario(catalogo, idOrigen, Vecindario): #Funcion pri
         lt.addLast(path_,i["vertexB"])
         return path_,distances_list,weight
 def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
-    pass
-
+    key = me.getValue(mp.get(catalogo["scc"]["idscc"],idOrigen))
+    components = me.getValue(om.get(catalogo["components"],key))
+    edges = me.getValue(om.get(catalogo["Edge_components"],key))
+    adjacents = gr.adjacents(catalogo["Graph"],idOrigen)
+    salida = lt.newList("ARRAY_LIST") #IdOrigen llega directamente a ellos
+    entrada = lt.newList("ARRAY_LIST") #Llega directamente a IdOrigen
+    for adjacent in lt.iterator(adjacents):
+        if gr.getEdge(catalogo["Graph"],idOrigen,adjacent) != None:
+            lt.addLast(salida,adjacent)
+        if gr.getEdge(catalogo["Graph"],adjacent,idOrigen) != None:
+            lt.addLast(entrada,adjacent)
+    continuar = True
+    new_component = newComponent(components,edges,idOrigen)
+    cycle_path = None
+    for salida_edge in lt.iterator(salida):
+        if continuar:
+            salida_search = bf.BreadhtFisrtSearch(new_component,salida_edge)
+            for entrada_edge in lt.iterator(entrada):
+                if salida_edge != entrada_edge and continuar == True:
+                    if bf.hasPathTo(salida_search,entrada_edge) == True:
+                        continuar = False
+                        cycle_path = reverselist(bf.pathTo(salida_search,entrada_edge))
+    if cycle_path != None:
+        lt.addFirst(cycle_path,idOrigen)
+        lt.addLast(cycle_path,idOrigen)
+        weight = 0
+        list_ = lt.newList("ARRAY_LIST")
+        i = 1
+        while i < lt.size(cycle_path):
+            if i != lt.size(cycle_path):
+                distance = gr.getEdge(catalogo["Graph"],lt.getElement(cycle_path,i),lt.getElement(cycle_path,i+1))["weight"]
+                weight += distance
+                lt.addLast(list_,round(distance,2))
+            i+=1
+        return cycle_path,weight,list_
+    else:
+        return None,None,None
+def newComponent(components,edges,idOrigen):
+    graph = gr.newGraph()
+    for component in lt.iterator(components):
+        if component != idOrigen:
+            gr.insertVertex(graph,component)
+    for edge in lt.iterator(edges):
+        if (edge["vertexA"] != idOrigen) and (edge["vertexB"] != idOrigen):
+            gr.addEdge(graph,edge["vertexA"],edge["vertexB"],edge["weight"])
+    return graph
 def graficarResultados(catalogo): #Funcion principal Req 8
     pass
 
