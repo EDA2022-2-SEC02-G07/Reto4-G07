@@ -48,6 +48,7 @@ los mismos.
 # Construccion de modelos
 def newCatalog():
     catalog = {'Graph':gr.newGraph(directed=True),
+                'GraphNW':gr.newGraph(directed=True),
                 "NameMap":mp.newMap(),
                 "Transbordo":mp.newMap(),
                 "VertexMap":mp.newMap(),
@@ -99,6 +100,7 @@ def add_contentStops(catalog, content):
     if mp.contains(catalog["VertexMap"],name) == False:
         mp.put(catalog["VertexMap"],name,True)
     gr.insertVertex(catalog['Graph'], name)
+    gr.insertVertex(catalog['GraphNW'], name)
     if mp.contains(catalog["Vecindario_Map"],content["Neighborhood_Name"]) == False:
         mp.put(catalog["Vecindario_Map"],content["Neighborhood_Name"],lt.newList("ARRAY_LIST"))
     lt.addLast(me.getValue(mp.get(catalog["Vecindario_Map"],content["Neighborhood_Name"])),name)
@@ -111,6 +113,7 @@ def add_contentEdges(catalog, content):
         latlog_last = (float(me.getValue(mp.get(catalog['NameMap'], vertexb))['Latitude']),float( me.getValue(mp.get(catalog['NameMap'], vertexb))['Longitude']))
         weight = haversine(latlog_first, latlog_last)
         gr.addEdge(catalog['Graph'], vertexa, vertexb, weight)
+        gr.addEdge(catalog['GraphNW'], vertexa, vertexb, 1)
         me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+1)
         me.setValue(mp.get(catalog["Load_Map"],"RutasExclusivas"),me.getValue(mp.get(catalog["Load_Map"],"RutasExclusivas"))+1)
 def add_Transbordos(catalog):
@@ -120,9 +123,12 @@ def add_Transbordos(catalog):
         values_ = mp.valueSet(me.getValue(mp.get(catalog['Transbordo'], i)))
         lt.addLast(catalog["Graph_List"],{"Code-Ruta":i,"Longitude":lt.getElement(values_, 1)['Longitude'],"Latitude":lt.getElement(values_, 1)['Latitude'],"Adjacents":""})
         gr.insertVertex(catalog["Graph"],i)
+        gr.insertVertex(catalog["GraphNW"],i)
         for e in lt.iterator(list_):
             gr.addEdge(catalog["Graph"],i,e,0)
             gr.addEdge(catalog["Graph"],e,i,0)
+            gr.addEdge(catalog["GraphNW"],i,e,1)
+            gr.addEdge(catalog["GraphNW"],e,i,1)
             me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)
             me.setValue(mp.get(catalog["Load_Map"],"RutasCompartidas"),me.getValue(mp.get(catalog["Load_Map"],"RutasCompartidas"))+2)
 def components(catalog):
@@ -173,8 +179,23 @@ def caminoPosibleEntreDosEstaciones(catalog, idOrigen, idDestino,search_method):
             lt.addLast(list_,round(distance,2))
         i+=1
     return path,weight,list_
+
 def menorCaminoEntreDosEstaciones(catalogo, idOrigen, idDestino): #Funcion principal Req 2
-    pass
+    search = dj.Dijkstra(catalogo['GraphNW'], idOrigen)
+    path = reverselist(dj.pathTo(search, idDestino))
+    path_list = lt.newList('ARRAY_LIST')
+    for i in lt.iterator(path):
+        lt.addLast(path_list, i['vertexA'])
+    weight = 0
+    list_ = lt.newList("ARRAY_LIST")
+    i = 1
+    while i < lt.size(path):
+        if i != lt.size(path):
+            distance = gr.getEdge(catalogo["Graph"],lt.getElement(path_list,i),lt.getElement(path_list,i+1))["weight"]
+            weight += distance
+            lt.addLast(list_,round(distance,2))
+        i+=1
+    return path_list, weight, list_
 
 def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
     componentes_conectados = ko.connectedComponents(catalogo["scc"])

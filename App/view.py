@@ -55,18 +55,41 @@ def printreq1(catalog, idOrigen, idDestino,search_method):
     print("Numero de estaciónes de camino:",str(st.size(stack))+".") 
     print("Distancia total",str(round(weight,2))+"km.")
     printlist = [["Stop","Distance Next Stop (km)"]]
+    transbordos = 0
     i = 1
     while i < lt.size(list_)+2:
         if i != lt.size(list_)+1:
+            if 'T' in lt.getElement(stack,i):
+                transbordos += 1
             printlist.append([lt.getElement(stack,i),lt.getElement(list_,i)])
         else:
+            if 'T' in lt.getElement(stack,i):
+                transbordos += 1
             printlist.append([lt.getElement(stack,i),'-'])
         i+=1
+    print('El número de transbordos en esta ruta es:', transbordos)
     print(tabulate(printlist,tablefmt="grid"))
             
 
 def printreq2(catalog, idOrigen, idDestino):
-    pass
+    path, weight, list_ = controller.menorCaminoEntreDosEstaciones(catalog, idOrigen, idDestino)
+    print("Numero de estaciónes de camino:",str(st.size(path))+".") 
+    print("Distancia total",str(round(weight,2))+"km.")
+    printlist = [["Stop","Distance Next Stop (km)"]]
+    transbordos = 0
+    i = 1
+    while i < lt.size(list_)+2:
+        if i != lt.size(list_)+1:
+            if 'T' in lt.getElement(path,i):
+                transbordos += 1
+            printlist.append([lt.getElement(path,i),lt.getElement(list_,i)])
+        else:
+            if 'T' in lt.getElement(path,i):
+                transbordos += 1
+            printlist.append([lt.getElement(path,i),'-'])
+        i+=1
+    print('El número de transbordos en esta ruta es:', transbordos)
+    print(tabulate(printlist,tablefmt="grid"))
 
 def printreq3(catalog):
     sublist,componentes = controller.reconocerComponentesConectadosenlaRed(catalog)
@@ -96,7 +119,7 @@ def printreq5(catalog, idOrigen, nConexionesPermitidas):
 
 def printreq6(catalog, idOrigen, idVecindario):
     path,distances_list,weight = controller.menorCaminoEstacionVencindario(catalog, idOrigen, idVecindario)
-    print("Numero de estaciónes de camino:",str(st.size(path))+".") 
+    print("Numero de estaciónes de camino:",str(lt.size(path))+".") 
     print("Distancia total",str(round(weight,2))+"km.")
     printlist = [["Stop","Distance Next Stop (km)"]]
     i = 1
@@ -165,7 +188,9 @@ def menu():
             printreq1(catalog, idOrigen, idDestino,search_method)
 
         elif int(inputs[0]) == 3:
-            printreq2(catalog)
+            idOrigen = input("Ingrese idOrigen: ")
+            idDestino = input("Ingrese idDestino: ")
+            printreq2(catalog, idOrigen, idDestino)
 
         elif int(inputs[0]) == 4:
             printreq3(catalog)
