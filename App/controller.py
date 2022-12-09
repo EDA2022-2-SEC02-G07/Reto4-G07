@@ -77,15 +77,11 @@ def loadData(control,size):
     estructura de datos
     """
     catalog = control['model']
-    time1 = getTime()
-    memory1 = getMemory()
     load_stops(catalog,size)
     load_edges(catalog,size)
     model.add_Transbordos(catalog)
     model.components(catalog)
-    time2 = getTime()
-    memory2 = getMemory()
-    return model.get_LoadValues(catalog),deltaTime(time2,time1),deltaMemory(memory2,memory1)
+    return model.get_LoadValues(catalog)
 # Funciones para la carga de datos
 def load_edges(catalog,size):
     file = 'Barcelona/bus_edges_bcn-utf8'+size+'.csv'
