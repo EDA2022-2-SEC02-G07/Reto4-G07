@@ -138,18 +138,21 @@ def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
 
 
 def printreq5(catalog, idOrigen, nConexionesPermitidas):
-    alcanzables, latitudes, longitudes = controller.localizarEstacionesAlcanzables(catalog, idOrigen, nConexionesPermitidas)
-    lats, longs = [], []
+    alcanzables, latitudes, longitudes, weights = controller.localizarEstacionesAlcanzables(catalog, idOrigen, nConexionesPermitidas)
+    lats, longs, weis = [], [], []
     for i in lt.iterator(latitudes):
         lats.append(i)
     for i in lt.iterator(longitudes):
         longs.append(i)
+    for i in lt.iterator(weights):
+        weis.append(i)
     print('Estaciones alcanzables:')
-    printlist = [['ID', 'Latitud', 'Longitud']]
+    printlist = [['ID', 'Latitud', 'Longitud', 'Peso']]
     pos = 0
     for i in lt.iterator(alcanzables):
-        if pos < len(lats):
-            printlist.append([i, lats[pos], longs[pos]])
+        if weis[pos-1] != None:
+            if pos < len(lats) and weis[pos] != weis[pos-1]:
+                printlist.append([i, lats[pos], longs[pos], weis[pos]])
         pos+=1
     print(tabulate(printlist,tablefmt="grid"))
 

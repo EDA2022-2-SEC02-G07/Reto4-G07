@@ -266,7 +266,18 @@ def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #
         if 'T' not in i:
             lt.addLast(latitudes, me.getValue(mp.get(catalogo['NameMap'], i))['Latitude'])
             lt.addLast(longitudes, me.getValue(mp.get(catalogo['NameMap'], i))['Longitude'])
-    return alcanzables, latitudes, longitudes
+    weights = lt.newList('ARRAY_LIST')
+    search2 = dj.Dijkstra(catalogo['Graph'], idOrigen)
+    for i in lt.iterator(alcanzables):
+        temp_path = reverselist(dj.pathTo(search2, i))
+        weight_list = lt.newList('ARRAY_LIST')
+        for i in lt.iterator(temp_path):
+            lt.addLast(weight_list, i['weight'])
+        weight = 0
+        for i in lt.iterator(weight_list):
+            weight += i
+        lt.addLast(weights, weight)
+    return alcanzables, latitudes, longitudes, weights
 
 def menorCaminoEstacionVencindario(catalogo, idOrigen, Vecindario): #Funcion principal Req 6
     vecindario_rutes = me.getValue(mp.get(catalogo["Vecindario_Map"],Vecindario))
