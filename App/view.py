@@ -115,7 +115,8 @@ def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
     pass
 
 def printreq5(catalog, idOrigen, nConexionesPermitidas):
-    pass
+    search = controller.localizarEstacionesAlcanzables(catalog, idOrigen, nConexionesPermitidas)
+    print(search)
 
 def printreq6(catalog, idOrigen, idVecindario):
     path,distances_list,weight = controller.menorCaminoEstacionVencindario(catalog, idOrigen, idVecindario)
@@ -216,9 +217,9 @@ def menu():
             printreq4(catalog, idOrigen, idDestino)
 
         elif int(inputs[0]) == 6:
-            idOrigen = input(": ")
-            idDestino = input(": ")
-            printreq5(catalog, idOrigen, idDestino)
+            idOrigen = input("Identificador de la estación origen: ")
+            num_conex = input("Número de conexiones permitidas desde la estación origen: ")
+            printreq5(catalog, idOrigen, num_conex)
 
         elif int(inputs[0]) == 7:
             idOrigen = input("Ingrese la Id de origen: ")

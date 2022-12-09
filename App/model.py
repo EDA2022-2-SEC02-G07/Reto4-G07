@@ -219,7 +219,20 @@ def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latO
     pass
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
-    pass
+    vertexes = gr.vertices(catalogo['Graph'])
+    search = dj.Dijkstra(catalogo['Graph'], idOrigen)
+    alcanzables = lt.newList('ARRAY_LIST')
+    for i in lt.iterator(vertexes):
+        while lt.size(alcanzables) < int(nConexionesPermitidas):
+            if i != idOrigen:
+                temp_path = reverselist(dj.pathTo(search, i))
+                path_list = lt.newList('ARRAY_LIST')
+                for i in lt.iterator(temp_path):
+                    lt.addLast(path_list, i['vertexA'])
+                for j in lt.iterator(path_list):
+                        if lt.isPresent(alcanzables, j) == 0:
+                            lt.addLast(alcanzables, j)
+    return alcanzables
 
 def menorCaminoEstacionVencindario(catalogo, idOrigen, Vecindario): #Funcion principal Req 6
     vecindario_rutes = me.getValue(mp.get(catalogo["Vecindario_Map"],Vecindario))
@@ -290,7 +303,7 @@ def caminoCircular(catalogo, idOrigen): #Funcion principal Req 7
         return cycle_path,weight,list_
     else:
         return None,None,None
-def newComponent(components,edges,idOrigen):
+def newComponent(components,edges,idOrigen): #Función Auxiliar Requerimiento 7
     graph = gr.newGraph()
     for component in lt.iterator(components):
         if component != idOrigen:
