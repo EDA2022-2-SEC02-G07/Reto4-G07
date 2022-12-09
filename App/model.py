@@ -221,20 +221,25 @@ def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latO
     destino = None
     def_o = None
     def_d = None
+    transbordo = 0
     vertices = gr.vertices(catalogo['Graph'])
+    print(catalogo['VertexMap'])
     for v in lt.iterator(vertices):
-        dist_estacion_o = haversine((lonOrigen, latOrigen),(v['Longitude'],v['Latitude']))
-        dist_estacion_d = haversine((lonDestino, latDestino),(v['Longitude'],v['Latitude']))
+        dist_estacion_o = haversine((float(lonOrigen), float(latOrigen)),(float(v['Longitude']),float(v['Latitude'])))
+        dist_estacion_d = haversine((float(lonDestino), float(latDestino)),(float(v['Longitude']),float(v['Latitude'])))
         if def_o == None or dist_estacion_o < def_o:
             def_o = dist_estacion_o
             origen = v
         if def_d == None or dist_estacion_d < def_d:
             def_d = dist_estacion_d
             destino = v
+        if v['Transbordo'] == 'S':
+            transbordo += 1
+
     graph = bell.BellmanFord(catalogo['GraphNW'],origen)
     distancia = bell.distTo(graph,destino)
 
-    return origen,def_o,destino,def_d,distancia
+    return origen,float(def_o),destino,float(def_d),float(distancia),vertices,transbordo
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
     vertexes = gr.vertices(catalogo['Graph'])
