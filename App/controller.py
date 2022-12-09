@@ -23,7 +23,8 @@
 import config as cf
 import model
 import csv
-
+import tracemalloc
+import time
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -37,18 +38,54 @@ def newController():
     control = {
         'model': model.newCatalog()
     }
+    tracemalloc.start()
     return control
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
+def deltaTime(end, start):
+    """
+    devuelve la diferencia entre tiempos de procesamiento muestreados
+    """
+    elapsed = float(end - start)
+    return elapsed
+def getMemory():
+    """
+    toma una muestra de la memoria alocada en instante de tiempo
+    """
+    return tracemalloc.take_snapshot()
+def deltaMemory(stop_memory, start_memory):
+    """
+    calcula la diferencia en memoria alocada del programa entre dos
+    instantes de tiempo y devuelve el resultado en bytes (ej.: 2100.0 B)
+    """
+    memory_diff = stop_memory.compare_to(start_memory, "filename")
+    delta_memory = 0.0
+
+    # suma de las diferencias en uso de memoria
+    for stat in memory_diff:
+        delta_memory = delta_memory + stat.size_diff
+    # de Byte -> kByte
+    delta_memory = delta_memory/1024.0
+    return delta_memory
+
 def loadData(control,size):
     """
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
     catalog = control['model']
+    time1 = getTime()
+    memory1 = getMemory()
     load_stops(catalog,size)
     load_edges(catalog,size)
     model.add_Transbordos(catalog)
     model.components(catalog)
-    return model.get_LoadValues(catalog)
+    time2 = getTime()
+    memory2 = getMemory()
+    return model.get_LoadValues(catalog),deltaTime(time2,time1),deltaMemory(memory2,memory1)
 # Funciones para la carga de datos
 def load_edges(catalog,size):
     file = 'Barcelona/bus_edges_bcn-utf8'+size+'.csv'
