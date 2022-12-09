@@ -234,23 +234,16 @@ def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latO
             if dist_estacion_d < def_d:
                 def_d = dist_estacion_d
                 destino = v['Code-Ruta']
-        else:
-            transbordo+=1
-    print(origen)
-    print(destino)
-    graph = bell.BellmanFord(catalogo['Graph'],origen)
-    distancia = bell.distTo(graph,destino)
+    graph = dj.Dijkstra(catalogo['Graph'],origen)
+    distancia = dj.distTo(graph,destino)
     lista_distancias = lt.newList()
-    temp_path = reverselist(bell.pathTo(graph,destino))
+    temp_path = reverselist(dj.pathTo(graph,destino))
     path = lt.newList('ARRAY_LIST')
     for i in lt.iterator(temp_path):
-        lt.addLast(path, i['vertexA'])
-    i = 1
-    while i < lt.size(path):
-        if i != lt.size(path):
-            distance = gr.getEdge(catalogo["Graph"],lt.getElement(path,i),lt.getElement(path,i+1))["weight"]
-            lt.addLast(lista_distancias,round(distance,2))
-        i+=1
+        lt.addLast(path,i["vertexA"])
+        distance = i["weight"]
+        lt.addLast(lista_distancias,round(distance,2))
+        lt.addLast(path,i["vertexB"])
     return float(def_o),float(def_d),float(distancia),transbordo,path,lista_distancias
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
