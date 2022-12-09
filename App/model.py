@@ -37,6 +37,7 @@ from DISClib.Algorithms.Graphs import dijsktra as dj
 from DISClib.ADT import stack as st
 from DISClib.Algorithms.Graphs import scc as ko
 from DISClib.Algorithms.Graphs import cycles as cy
+from DISClib.Algorithms.Graphs import bellmanford as bell
 assert cf
 
 
@@ -216,7 +217,24 @@ def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
     sublist = lt.subList(list_,1,5)
     return sublist,componentes_conectados
 def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
-    pass
+    origen = None
+    destino = None
+    def_o = None
+    def_d = None
+    vertices = gr.vertices(catalogo['Graph'])
+    for v in lt.iterator(vertices):
+        dist_estacion_o = haversine((lonOrigen, latOrigen),(v['Longitude'],v['Latitude']))
+        dist_estacion_d = haversine((lonDestino, latDestino),(v['Longitude'],v['Latitude']))
+        if def_o == None or dist_estacion_o < def_o:
+            def_o = dist_estacion_o
+            origen = v
+        if def_d == None or dist_estacion_d < def_d:
+            def_d = dist_estacion_d
+            destino = v
+    graph = bell.BellmanFord(catalogo['GraphNW'],origen)
+    distancia = bell.distTo(graph,destino)
+
+    return origen,def_o,destino,def_d,distancia
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
     vertexes = gr.vertices(catalogo['Graph'])
