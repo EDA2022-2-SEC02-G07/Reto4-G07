@@ -132,6 +132,8 @@ def add_Transbordos(catalog):
         for e in lt.iterator(list_):
             gr.addEdge(catalog["Graph"],i,e,0)
             gr.addEdge(catalog["Graph"],e,i,0)
+            lt.addLast(catalog["Edge_List"],{"vertexA":i,"vertexB":e,"weight":0})
+            lt.addLast(catalog["Edge_List"],{"vertexA":e,"vertexB":i,"weight":0})
             gr.addEdge(catalog["GraphNW"],i,e,1)
             gr.addEdge(catalog["GraphNW"],e,i,1)
             me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)

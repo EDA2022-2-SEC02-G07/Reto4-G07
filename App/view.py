@@ -133,22 +133,25 @@ def printreq6(catalog, idOrigen, idVecindario):
     print(tabulate(printlist,tablefmt="grid"))
 def printreq7(catalog, idOrigen):
     cycle_path,weight,list_ = controller.caminoCircular(catalog, idOrigen)
-    t = 0
-    for i in lt.iterator(cycle_path):
-        if "T" in i:
-            t+=1
-    print("Numero de estaciónes de camino:",str(st.size(cycle_path))+".") 
-    print("Distancia total",str(round(weight,2))+"km.")
-    print("Total de transbordos:",t)
-    printlist = [["Stop","Distance Next Stop (km)"]]
-    i = 1
-    while i < lt.size(list_)+2:
-        if i != lt.size(list_)+1:
-            printlist.append([lt.getElement(cycle_path,i),lt.getElement(list_,i)])
-        else:
-            printlist.append([lt.getElement(cycle_path,i),'-'])
-        i+=1
-    print(tabulate(printlist,tablefmt="grid"))
+    if cycle_path != None:
+        t = 0
+        for i in lt.iterator(cycle_path):
+            if "T" in i:
+                t+=1
+        print("Numero de estaciónes de camino:",str(st.size(cycle_path))+".") 
+        print("Distancia total",str(round(weight,2))+"km.")
+        print("Total de transbordos:",t)
+        printlist = [["Stop","Distance Next Stop (km)"]]
+        i = 1
+        while i < lt.size(list_)+2:
+            if i != lt.size(list_)+1:
+                printlist.append([lt.getElement(cycle_path,i),lt.getElement(list_,i)])
+            else:
+                printlist.append([lt.getElement(cycle_path,i),'-'])
+            i+=1
+        print(tabulate(printlist,tablefmt="grid"))
+    else:
+        print("No hay ciclo.")
 def printreq8(catalog):
     pass
 
