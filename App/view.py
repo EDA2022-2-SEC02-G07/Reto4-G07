@@ -113,7 +113,29 @@ def printreq3(catalog):
         rank +=1
     print(tabulate(printlist,tablefmt="grid"))
 def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
-    pass
+    origen,def_o,destino,def_d,distancia,vertices,transbordo = controller.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalog, lonOrigen, latOrigen, lonDestino, latDestino)
+    print("Distancia entre el origen y la estacion mas cercana: "+ def_o, "km")
+    print("Distancia las estaciones de origen y destino: "+ distancia, "km")
+    print("Distancia entre el destino y la estacion mas cercana: "+ def_d, "km")
+    print("Total de estaciones:", lt.size(vertices))
+    print("Total de transbordos:", transbordo)
+    print("Estaciones que definen el camino:")
+    printlist = [["Stop","Distance Next Stop (km)"]]
+    transbordos = 0
+    i = 1
+    while i < lt.size(vertices)+2:
+        if i != lt.size(vertices)+1:
+            if 'T' in lt.getElement(vertices,i):
+                transbordos += 1
+            printlist.append([lt.getElement(vertices,i),lt.getElement(vertices,i)])
+        else:
+            if 'T' in lt.getElement(vertices,i):
+                transbordos += 1
+            printlist.append([lt.getElement(vertices,i),'-'])
+        i+=1
+    print('El número de transbordos en esta ruta es:', transbordos)
+    print(tabulate(printlist,tablefmt="grid"))
+
 
 def printreq5(catalog, idOrigen, nConexionesPermitidas):
     alcanzables, latitudes, longitudes = controller.localizarEstacionesAlcanzables(catalog, idOrigen, nConexionesPermitidas)
@@ -146,22 +168,25 @@ def printreq6(catalog, idOrigen, idVecindario):
     print(tabulate(printlist,tablefmt="grid"))
 def printreq7(catalog, idOrigen):
     cycle_path,weight,list_ = controller.caminoCircular(catalog, idOrigen)
-    t = 0
-    for i in lt.iterator(cycle_path):
-        if "T" in i:
-            t+=1
-    print("Numero de estaciónes de camino:",str(st.size(cycle_path))+".") 
-    print("Distancia total",str(round(weight,2))+"km.")
-    print("Total de transbordos:",t)
-    printlist = [["Stop","Distance Next Stop (km)"]]
-    i = 1
-    while i < lt.size(list_)+2:
-        if i != lt.size(list_)+1:
-            printlist.append([lt.getElement(cycle_path,i),lt.getElement(list_,i)])
-        else:
-            printlist.append([lt.getElement(cycle_path,i),'-'])
-        i+=1
-    print(tabulate(printlist,tablefmt="grid"))
+    if cycle_path != None:
+        t = 0
+        for i in lt.iterator(cycle_path):
+            if "T" in i:
+                t+=1
+        print("Numero de estaciónes de camino:",str(st.size(cycle_path))+".") 
+        print("Distancia total",str(round(weight,2))+"km.")
+        print("Total de transbordos:",t)
+        printlist = [["Stop","Distance Next Stop (km)"]]
+        i = 1
+        while i < lt.size(list_)+2:
+            if i != lt.size(list_)+1:
+                printlist.append([lt.getElement(cycle_path,i),lt.getElement(list_,i)])
+            else:
+                printlist.append([lt.getElement(cycle_path,i),'-'])
+            i+=1
+        print(tabulate(printlist,tablefmt="grid"))
+    else:
+        print("No hay ciclo.")
 def printreq8(catalog):
     pass
 
@@ -225,9 +250,11 @@ def menu():
             printreq3(catalog)
 
         elif int(inputs[0]) == 5:
-            idOrigen = input(": ")
-            N = input(": ")
-            printreq4(catalog, idOrigen, idDestino)
+            lonOrigen = input("Ingrese la longitud del origen: ")
+            latOrigen = input("Ingrese la latitud del origen: ")
+            lonDestino = input("Ingrese la longitud del destino: ")
+            latDestino = input("Ingrese la latitud del destino: ")
+            printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino)
 
         elif int(inputs[0]) == 6:
             idOrigen = input("Identificador de la estación origen: ")

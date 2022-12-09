@@ -37,6 +37,7 @@ from DISClib.Algorithms.Graphs import dijsktra as dj
 from DISClib.ADT import stack as st
 from DISClib.Algorithms.Graphs import scc as ko
 from DISClib.Algorithms.Graphs import cycles as cy
+from DISClib.Algorithms.Graphs import bellmanford as bell
 assert cf
 
 
@@ -131,6 +132,8 @@ def add_Transbordos(catalog):
         for e in lt.iterator(list_):
             gr.addEdge(catalog["Graph"],i,e,0)
             gr.addEdge(catalog["Graph"],e,i,0)
+            lt.addLast(catalog["Edge_List"],{"vertexA":i,"vertexB":e,"weight":0})
+            lt.addLast(catalog["Edge_List"],{"vertexA":e,"vertexB":i,"weight":0})
             gr.addEdge(catalog["GraphNW"],i,e,1)
             gr.addEdge(catalog["GraphNW"],e,i,1)
             me.setValue(mp.get(catalog["Load_Map"],"Arcos"),me.getValue(mp.get(catalog["Load_Map"],"Arcos"))+2)
@@ -216,7 +219,29 @@ def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
     sublist = lt.subList(list_,1,5)
     return sublist,componentes_conectados
 def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
-    pass
+    origen = None
+    destino = None
+    def_o = None
+    def_d = None
+    transbordo = 0
+    vertices = gr.vertices(catalogo['Graph'])
+    print(catalogo['VertexMap'])
+    for v in lt.iterator(vertices):
+        dist_estacion_o = haversine((float(lonOrigen), float(latOrigen)),(float(v['Longitude']),float(v['Latitude'])))
+        dist_estacion_d = haversine((float(lonDestino), float(latDestino)),(float(v['Longitude']),float(v['Latitude'])))
+        if def_o == None or dist_estacion_o < def_o:
+            def_o = dist_estacion_o
+            origen = v
+        if def_d == None or dist_estacion_d < def_d:
+            def_d = dist_estacion_d
+            destino = v
+        if v['Transbordo'] == 'S':
+            transbordo += 1
+
+    graph = bell.BellmanFord(catalogo['GraphNW'],origen)
+    distancia = bell.distTo(graph,destino)
+
+    return origen,float(def_o),destino,float(def_d),float(distancia),vertices,transbordo
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
     vertexes = gr.vertices(catalogo['Graph'])
