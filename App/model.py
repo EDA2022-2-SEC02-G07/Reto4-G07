@@ -230,9 +230,15 @@ def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #
                 for i in lt.iterator(temp_path):
                     lt.addLast(path_list, i['vertexA'])
                 for j in lt.iterator(path_list):
-                        if lt.isPresent(alcanzables, j) == 0:
-                            lt.addLast(alcanzables, j)
-    return alcanzables
+                    if lt.isPresent(alcanzables, j) == 0:
+                        lt.addLast(alcanzables, j)
+    latitudes = lt.newList('ARRAY_LIST')
+    longitudes = lt.newList('ARRAY_LIST')
+    for i in lt.iterator(alcanzables):
+        if 'T' not in i:
+            lt.addLast(latitudes, me.getValue(mp.get(catalogo['NameMap'], i))['Latitude'])
+            lt.addLast(longitudes, me.getValue(mp.get(catalogo['NameMap'], i))['Longitude'])
+    return alcanzables, latitudes, longitudes
 
 def menorCaminoEstacionVencindario(catalogo, idOrigen, Vecindario): #Funcion principal Req 6
     vecindario_rutes = me.getValue(mp.get(catalogo["Vecindario_Map"],Vecindario))

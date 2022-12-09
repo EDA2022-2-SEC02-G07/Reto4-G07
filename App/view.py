@@ -26,6 +26,7 @@ import threading
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import stack as st
+from DISClib.ADT import map as mp
 assert cf
 
 
@@ -115,8 +116,20 @@ def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
     pass
 
 def printreq5(catalog, idOrigen, nConexionesPermitidas):
-    search = controller.localizarEstacionesAlcanzables(catalog, idOrigen, nConexionesPermitidas)
-    print(search)
+    alcanzables, latitudes, longitudes = controller.localizarEstacionesAlcanzables(catalog, idOrigen, nConexionesPermitidas)
+    lats, longs = [], []
+    for i in lt.iterator(latitudes):
+        lats.append(i)
+    for i in lt.iterator(longitudes):
+        longs.append(i)
+    print('Estaciones alcanzables:')
+    printlist = [['ID', 'Latitud', 'Longitud']]
+    pos = 0
+    for i in lt.iterator(alcanzables):
+        if pos < len(lats):
+            printlist.append([i, lats[pos], longs[pos]])
+        pos+=1
+    print(tabulate(printlist,tablefmt="grid"))
 
 def printreq6(catalog, idOrigen, idVecindario):
     path,distances_list,weight = controller.menorCaminoEstacionVencindario(catalog, idOrigen, idVecindario)
