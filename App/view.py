@@ -201,7 +201,7 @@ def load(catalog):
     pass
 def menu():
     catalog = None
-    size = "-small"
+    size = "-50pct"
     search_method = "bfs"
     while True:
         printMenu()
