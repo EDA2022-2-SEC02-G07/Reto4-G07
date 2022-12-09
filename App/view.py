@@ -112,6 +112,9 @@ def printreq3(catalog):
         rank +=1
     print(tabulate(printlist,tablefmt="grid"))
 def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
+    origen,def_o,destino,def_d,distancia = controller.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalog, lonOrigen, latOrigen, lonDestino, latDestino)
+    print("La distancia entre el origen y la estacion mas cercana es: "+ distancia)
+    
     pass
 
 def printreq5(catalog, idOrigen, nConexionesPermitidas):
