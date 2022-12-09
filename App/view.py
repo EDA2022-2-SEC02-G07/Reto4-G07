@@ -113,27 +113,22 @@ def printreq3(catalog):
         rank +=1
     print(tabulate(printlist,tablefmt="grid"))
 def printreq4(catalog, lonOrigen, latOrigen, lonDestino, latDestino):
-    origen,def_o,destino,def_d,distancia,vertices,transbordo = controller.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalog, lonOrigen, latOrigen, lonDestino, latDestino)
+    def_o,def_d,distancia,transbordo,path,lista_distancias = controller.planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalog, lonOrigen, latOrigen, lonDestino, latDestino)
     print("Distancia entre el origen y la estacion mas cercana: "+ def_o, "km")
     print("Distancia las estaciones de origen y destino: "+ distancia, "km")
     print("Distancia entre el destino y la estacion mas cercana: "+ def_d, "km")
-    print("Total de estaciones:", lt.size(vertices))
+    print("Total de estaciones:", lt.size(path))
     print("Total de transbordos:", transbordo)
     print("Estaciones que definen el camino:")
     printlist = [["Stop","Distance Next Stop (km)"]]
-    transbordos = 0
     i = 1
-    while i < lt.size(vertices)+2:
-        if i != lt.size(vertices)+1:
-            if 'T' in lt.getElement(vertices,i):
-                transbordos += 1
-            printlist.append([lt.getElement(vertices,i),lt.getElement(vertices,i)])
+    while i < lt.size(lista_distancias)+2:
+        if i != lt.size(lista_distancias)+1:
+            printlist.append([lt.getElement(path,i),lt.getElement(lista_distancias,i)])
         else:
-            if 'T' in lt.getElement(vertices,i):
-                transbordos += 1
-            printlist.append([lt.getElement(vertices,i),'-'])
+            printlist.append([lt.getElement(path,i),'-'])
         i+=1
-    print('El número de transbordos en esta ruta es:', transbordos)
+    print('El número de transbordos en esta ruta es:', transbordo)
     print(tabulate(printlist,tablefmt="grid"))
 
 

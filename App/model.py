@@ -219,29 +219,39 @@ def reconocerComponentesConectadosenlaRed(catalogo): #Funcion principal Req 3
     sublist = lt.subList(list_,1,5)
     return sublist,componentes_conectados
 def planearCaminoDistanciaMinimaEntrePuntosGeograficos(catalogo, lonOrigen, latOrigen, lonDestino, latDestino): #Funcion principal Req 4
-    origen = None
-    destino = None
-    def_o = None
-    def_d = None
+    def_o = 10e100
+    def_d = 10e100
     transbordo = 0
-    vertices = gr.vertices(catalogo['Graph'])
-    print(catalogo['VertexMap'])
+    vertices = catalogo['Graph_List']
+
     for v in lt.iterator(vertices):
-        dist_estacion_o = haversine((float(lonOrigen), float(latOrigen)),(float(v['Longitude']),float(v['Latitude'])))
-        dist_estacion_d = haversine((float(lonDestino), float(latDestino)),(float(v['Longitude']),float(v['Latitude'])))
-        if def_o == None or dist_estacion_o < def_o:
-            def_o = dist_estacion_o
-            origen = v
-        if def_d == None or dist_estacion_d < def_d:
-            def_d = dist_estacion_d
-            destino = v
-        if v['Transbordo'] == 'S':
-            transbordo += 1
-
-    graph = bell.BellmanFord(catalogo['GraphNW'],origen)
+        if 'T' not in v['Code-Ruta']:
+            dist_estacion_o = haversine((float(lonOrigen), float(latOrigen)),(float(v['Longitude']),float(v['Latitude'])))
+            dist_estacion_d = haversine((float(lonDestino), float(latDestino)),(float(v['Longitude']),float(v['Latitude'])))
+            if dist_estacion_o < def_o:
+                def_o = dist_estacion_o
+                origen = v['Code-Ruta']
+            if dist_estacion_d < def_d:
+                def_d = dist_estacion_d
+                destino = v['Code-Ruta']
+        else:
+            transbordo+=1
+    print(origen)
+    print(destino)
+    graph = bell.BellmanFord(catalogo['Graph'],origen)
     distancia = bell.distTo(graph,destino)
-
-    return origen,float(def_o),destino,float(def_d),float(distancia),vertices,transbordo
+    lista_distancias = lt.newList()
+    temp_path = reverselist(bell.pathTo(graph,destino))
+    path = lt.newList('ARRAY_LIST')
+    for i in lt.iterator(temp_path):
+        lt.addLast(path, i['vertexA'])
+    i = 1
+    while i < lt.size(path):
+        if i != lt.size(path):
+            distance = gr.getEdge(catalogo["Graph"],lt.getElement(path,i),lt.getElement(path,i+1))["weight"]
+            lt.addLast(lista_distancias,round(distance,2))
+        i+=1
+    return float(def_o),float(def_d),float(distancia),transbordo,path,lista_distancias
 
 def localizarEstacionesAlcanzables(catalogo, idOrigen, nConexionesPermitidas): #Funcion principal Req 5
     vertexes = gr.vertices(catalogo['Graph'])
